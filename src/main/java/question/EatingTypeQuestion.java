@@ -11,12 +11,13 @@ public class EatingTypeQuestion implements Question<EatingType> {
         System.out.println(QUESTION_TEXT);
     }
 
-    public Answer<EatingType> getAnswer() {
-        return answer;
-    }
-
     @Override
     public void fillAnswer(Answer<EatingType> answer) {
         this.answer = answer;
+    }
+
+    @Override
+    public Answer<EatingType> takeAnswer() {
+        return answer;
     }
 }

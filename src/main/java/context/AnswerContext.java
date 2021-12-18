@@ -4,7 +4,7 @@ import answer.EatingType;
 import model.Product;
 
 public class AnswerContext {
-    private final Product product;
+    private Product product;
     private final EatingType eatingType;
 
     public AnswerContext(Product product, EatingType eatingType) {
@@ -18,5 +18,9 @@ public class AnswerContext {
 
     public Product getProduct() {
         return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
     }
 }

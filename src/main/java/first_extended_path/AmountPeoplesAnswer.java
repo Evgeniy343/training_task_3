@@ -1,6 +1,8 @@
-package answer;
+package first_extended_path;
 
-public class AmountPeoplesAnswer implements Answer{
+import answer.Answer;
+
+public class AmountPeoplesAnswer implements Answer<Integer> {
     private final Integer amount;
 
     public AmountPeoplesAnswer(Integer amount) {
@@ -8,7 +10,7 @@ public class AmountPeoplesAnswer implements Answer{
     }
 
     @Override
-    public Object takeParam() {
+    public Integer takeParam() {
         return amount;
     }
 }

@@ -10,12 +10,15 @@ public class ProductInRecipeQuestion implements Question<Product> {
     public ProductInRecipeQuestion() {
     }
 
-    public Answer<Product> getAnswer() {
-        return answer;
-    }
-
     @Override
     public void fillAnswer(Answer<Product> answer) {
         this.answer = answer;
     }
+
+    @Override
+    public Answer<Product> takeAnswer() {
+        return answer;
+    }
+
+
 }

@@ -2,14 +2,17 @@ package model;
 
 import answer.Answer;
 import answer.EatingType;
+import answer.EatingTypeAnswer;
+import answer.ProductInRecipeAnswer;
 import context.AnswerContext;
 import handler.AnswerHandler;
 import handler.EatingHandler;
-import question.Question;
 import handler.QuestionHandler;
-import type.QuestionOrAnswerType;
+import question.EatingTypeQuestion;
+import question.ProductInRecipeQuestion;
+import question.Question;
+import second_extended_path.AllergyException;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -18,6 +21,8 @@ public class CookingAssistantSystem {
     private final List<Recipe> recipes;
     private final Map<Product,Integer> products;
     private final Recipe currentRecipe;
+    private Question<EatingType> firstQuestion;
+    private Question<Product> secondQuestion;
 
     public CookingAssistantSystem(List<Recipe> recipes, Map<Product, Integer> products, Recipe currentRecipe) {
         this.recipes = recipes;
@@ -25,26 +30,37 @@ public class CookingAssistantSystem {
         this.currentRecipe = currentRecipe;
     }
 
-    public List<Recipe> findNewRecipe(AnswerContext context){
+    public List<Recipe> findNewRecipe(AnswerContext context) throws AllergyException {
 
-        Question<EatingType> firstQuestion = Question.newInstance(QuestionOrAnswerType.EATING_TIME);
-        Question<Product> secondQuestion = Question.newInstance(QuestionOrAnswerType.PRODUCT_IN_RECIPE);
+        firstQuestion = new EatingTypeQuestion();
+        secondQuestion = new ProductInRecipeQuestion();
 
-        Answer<EatingType> firstAnswer = Answer.newInstance(QuestionOrAnswerType.EATING_TIME, context);
-        Answer<Product> secondAnswer = Answer.newInstance(QuestionOrAnswerType.PRODUCT_IN_RECIPE,context);
+        Answer<EatingType> firstAnswer = new EatingTypeAnswer(context.getEatingType());
+        Answer<Product> secondAnswer = new ProductInRecipeAnswer(context.getProduct());
 
-        QuestionHandler handler = new QuestionHandler();
-        handler.handle(firstQuestion, QuestionOrAnswerType.EATING_TIME, firstAnswer);
-        handler.handle(secondQuestion, QuestionOrAnswerType.PRODUCT_IN_RECIPE, secondAnswer);
+        QuestionHandler<EatingType> eatingTypeQuestionHandler = Question::fillAnswer;
+        eatingTypeQuestionHandler.handle(firstQuestion,firstAnswer);
+
+        QuestionHandler<Product> productRecipeQuestionHandler = Question::fillAnswer;
+        productRecipeQuestionHandler.handle(secondQuestion,secondAnswer);
+
+
 
         AnswerHandler answerHandler = new AnswerHandler(recipes);
-        List<Recipe> suggestedRecipes = answerHandler.handle(firstAnswer, secondAnswer);
+
+        List<Recipe> suggestedRecipes = answerHandler.handle(firstQuestion.takeAnswer(),secondQuestion.takeAnswer());
         return suggestedRecipes;
     }
 
     public void continueCooking(){
         EatingHandler eatingHandler = new EatingHandler();
         eatingHandler.handle(currentRecipe);
+    }
+
+    public void showRecipes(List<Recipe> recipes){
+        for (Recipe recipe : recipes) {
+            System.out.println(recipe.toString());
+        }
     }
 
     public void viewRecipeCatalog(){
@@ -71,5 +87,13 @@ public class CookingAssistantSystem {
 
     public Recipe getCurrentRecipe() {
         return currentRecipe;
+    }
+
+    public Question<EatingType> getFirstQuestion() {
+        return firstQuestion;
+    }
+
+    public Question<Product> getSecondQuestion() {
+        return secondQuestion;
     }
 }
